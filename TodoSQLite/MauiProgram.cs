@@ -21,6 +21,7 @@ public static class MauiProgram
 		builder.Services.AddTransient<TodoItemPage>();
 
 		builder.Services.AddSingleton<TodoItemDatabase>();
+		builder.Services.AddSingleton<UserItemDataBase>();
 
 		return builder.Build();
 	}

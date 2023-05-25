@@ -3,32 +3,23 @@ using TodoSQLite.Models;
 
 namespace TodoSQLite.Data;
 
-public class TodoItemDatabase
+public class TodoItemDatabase : BaseItem
 {
-    SQLiteAsyncConnection Database;
     public TodoItemDatabase()
     {
     }
-    async Task Init()
-    {
-        if (Database is not null)
-            return;
 
-        Database = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
-        var result = await Database.CreateTableAsync<TodoItem>();
-    }
-
-    public async Task<List<TodoItem>> GetItemsAsync()
+    public async Task<List<TodoItem>> GetItemsAsync(int id)
     {
         await Init();
-        return await Database.Table<TodoItem>().ToListAsync();
+        return await Database.Table<TodoItem>().Where(x=>x.UserId==id).ToListAsync();
     }
 
     public async Task<List<TodoItem>> GetItemsNotDoneAsync()
     {
         await Init();
-        return await Database.Table<TodoItem>().Where(t => t.Done).ToListAsync();
-        
+        return await Database.Table<TodoItem>().Where(t => t.Status == Statuses.Выполнен).ToListAsync();
+
         // SQL queries are also possible
         //return await Database.QueryAsync<TodoItem>("SELECT * FROM [TodoItem] WHERE [Done] = 0");
     }
@@ -36,13 +27,13 @@ public class TodoItemDatabase
     public async Task<TodoItem> GetItemAsync(int id)
     {
         await Init();
-        return await Database.Table<TodoItem>().Where(i => i.ID == id).FirstOrDefaultAsync();
+        return await Database.Table<TodoItem>().Where(i => i.Id == id).FirstOrDefaultAsync();
     }
 
     public async Task<int> SaveItemAsync(TodoItem item)
     {
         await Init();
-        if (item.ID != 0)
+        if (item.Id != 0)
         {
             return await Database.UpdateAsync(item);
         }

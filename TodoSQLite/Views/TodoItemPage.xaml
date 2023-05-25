@@ -10,11 +10,27 @@
                              Spacing="10"
                              VerticalOptions="StartAndExpand">
             <Label Text="Название компании" />
-            <Entry Text="{Binding Name}" />
+            <Entry x:Name="Name" Text="{Binding Name}" />
             <Label Text="Тип заявки" />
-            <Entry Text="{Binding Notes}" />
-            <Label Text="Выполнена" />
-            <Switch IsToggled="{Binding Done}" />
+            <Picker  x:Name="TypeRequesz" SelectedIndex="{Binding Type}" SelectedIndexChanged="Picker_OnSelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>Поверка</x:String>
+                        <x:String>Образец</x:String>
+                    <x:String>Индивидуальный</x:String>
+                </Picker.Items>
+            </Picker>
+            <Label x:Name="TitelNumber" IsVisible="False" Text="Номер" />
+            <Entry x:Name="Number" IsVisible="False" Text="{Binding Phone}" />
+
+            <Label Text="Состояние" />
+            <Picker  x:Name="TypeRequest" SelectedIndex="{Binding Status}" 
+                     SelectedIndexChanged="StatusPicker">
+                <Picker.Items>
+                    <x:String>Обрабатывается</x:String>
+                    <x:String>Выполняется</x:String>
+                    <x:String>Выполнен</x:String>
+                </Picker.Items>
+            </Picker>
             <Button Text="Отправить"
                     Clicked="OnSaveClicked" />
             <Button Text="Удалить"
