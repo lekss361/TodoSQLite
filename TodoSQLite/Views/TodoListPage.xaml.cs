@@ -23,7 +23,12 @@ public partial class TodoListPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        var items = await database.GetItemsAsync(userItem.Id);
+
+        List<TodoItem> items = new List<TodoItem>();
+        if (userItem.Role == Role.User)
+            items = await database.GetItemsAsync(userItem.Id);
+        else
+            items = await database.GetAllItemsAsync();
         MainThread.BeginInvokeOnMainThread(() =>
         {
             Items.Clear();
@@ -57,7 +62,7 @@ public partial class TodoListPage : ContentPage
     }
     async void AddUser(object sender, EventArgs e)
     {
-        UserItem item = new UserItem() { Login = TextLogin.Text, Password = TextPassword.Text, Role = 0 };
+        UserItem item = new UserItem() { Login = TextLogin.Text, Password = TextPassword.Text, Role = Role.User };
         int x = await userItemDataBase.SaveItemAsync(item);
     }
     async void CheckUser(object sender, EventArgs e)
@@ -72,7 +77,12 @@ public partial class TodoListPage : ContentPage
         }
         else
         {
-            var items = await database.GetItemsAsync(userItem.Id);
+            List<TodoItem> items = new List<TodoItem>();
+            if (userItem.Role == Role.User)
+                items = await database.GetItemsAsync(userItem.Id);
+            else
+                items = await database.GetAllItemsAsync();
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 Items.Clear();

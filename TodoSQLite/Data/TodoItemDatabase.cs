@@ -9,6 +9,11 @@ public class TodoItemDatabase : BaseItem
     {
     }
 
+    public async Task<List<TodoItem>> GetAllItemsAsync()
+    {
+        await Init();
+        return await Database.Table<TodoItem>().ToListAsync();
+    }
     public async Task<List<TodoItem>> GetItemsAsync(int id)
     {
         await Init();
