@@ -7,16 +7,14 @@ namespace TodoSQLite.Views;
 
 public partial class TodoListPage : ContentPage
 {
-    TodoItemDatabase database;
-    UserItemDataBase userItemDataBase;
     public ObservableCollection<TodoItem> Items { get; set; } = new();
     UserItem userItem = new UserItem();
-    public TodoListPage(TodoItemDatabase todoItemDatabase, UserItemDataBase userItemDataBase)
+    IDbRepository dbRepository;
+    public TodoListPage( IDbRepository dbRepository)
     {
         InitializeComponent();
-        database = todoItemDatabase;
         BindingContext = this;
-        this.userItemDataBase = userItemDataBase;
+        this.dbRepository = dbRepository;
     }
 
 
@@ -26,9 +24,9 @@ public partial class TodoListPage : ContentPage
 
         List<TodoItem> items = new List<TodoItem>();
         if (userItem.Role == Role.User)
-            items = await database.GetItemsAsync(userItem.Id);
+            items = dbRepository.Get<TodoItem>(x => x.UserId == userItem.Id).ToList();
         else
-            items = await database.GetAllItemsAsync();
+            items = dbRepository.GetAll<TodoItem>().ToList();
         MainThread.BeginInvokeOnMainThread(() =>
         {
             Items.Clear();
@@ -38,7 +36,7 @@ public partial class TodoListPage : ContentPage
         });
     }
     async void OnItemAdded(object sender, EventArgs e)
-    {   
+    {
         await Shell.Current.GoToAsync(nameof(TodoItemPage), true, new Dictionary<string, object>
         {
             ["Item"] = new TodoItem(),
@@ -55,7 +53,7 @@ public partial class TodoListPage : ContentPage
         await Shell.Current.GoToAsync(nameof(TodoItemPage), true, new Dictionary<string, object>
         {
             ["Item"] = item,
-            ["User"]=userItem
+            ["User"] = userItem
         });
 
 
@@ -63,12 +61,13 @@ public partial class TodoListPage : ContentPage
     async void AddUser(object sender, EventArgs e)
     {
         UserItem item = new UserItem() { Login = TextLogin.Text, Password = TextPassword.Text, Role = Role.User };
-        int x = await userItemDataBase.SaveItemAsync(item);
+        int x = dbRepository.Add(item);
+        dbRepository.SaveChangesAsync();
     }
     async void CheckUser(object sender, EventArgs e)
     {
         UserItem item = new UserItem() { Login = TextLogin.Text, Password = TextPassword.Text };
-        userItem = await userItemDataBase.GetUserAsync(TextLogin.Text);
+        userItem = dbRepository.Get<UserItem>(x => x.Login == TextLogin.Text).FirstOrDefault();
 
         if (userItem == null || userItem.Password != TextPassword.Text)
         {
@@ -79,9 +78,9 @@ public partial class TodoListPage : ContentPage
         {
             List<TodoItem> items = new List<TodoItem>();
             if (userItem.Role == Role.User)
-                items = await database.GetItemsAsync(userItem.Id);
+                items = dbRepository.Get<TodoItem>(x => x.Id == userItem.Id).ToList();
             else
-                items = await database.GetAllItemsAsync();
+                items = dbRepository.GetAll<TodoItem>().ToList();
 
             MainThread.BeginInvokeOnMainThread(() =>
             {

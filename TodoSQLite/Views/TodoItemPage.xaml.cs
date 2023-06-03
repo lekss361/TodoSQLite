@@ -14,6 +14,7 @@ public partial class TodoItemPage : ContentPage
     public int Role { get; set; }
     private TodoItem _todoItem = new TodoItem();
     private UserItem _userItem = new();
+    private IDbRepository dbRepository;
 
     public UserItem User
     {
@@ -56,14 +57,12 @@ public partial class TodoItemPage : ContentPage
 
         }
     }
-    TodoItemDatabase database;
 
-    public TodoItemPage(TodoItemDatabase todoItemDatabase)
+    public TodoItemPage( IDbRepository dbRepository)
     {
         InitializeComponent();
-        database = todoItemDatabase;
         BindingContext = this;
-
+        this.dbRepository = dbRepository;
     }
 
     async void OnSaveClicked(object sender, EventArgs e)
@@ -84,7 +83,9 @@ public partial class TodoItemPage : ContentPage
         _todoItem.Phone = Convert.ToInt32(this.Number.Text);
         _todoItem.Name = this.NameCompanyEntr.Text;
         _todoItem.Type = (TypeOrders)this.TypeRequesz.SelectedIndex;
-        await database.SaveItemAsync(_todoItem);
+        dbRepository.Add<TodoItem>(_todoItem);
+        dbRepository.SaveChangesAsync();
+
         await Shell.Current.GoToAsync("..");
     }
 
@@ -92,7 +93,8 @@ public partial class TodoItemPage : ContentPage
     {
         if (_todoItem.Id == 0)
             return;
-        await database.DeleteItemAsync(_todoItem);
+        dbRepository.Remove(_todoItem);
+        dbRepository.SaveChangesAsync();
         await Shell.Current.GoToAsync("..");
     }
 

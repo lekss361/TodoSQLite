@@ -1,22 +1,21 @@
-﻿using SQLite;
-
-namespace TodoSQLite.Models;
+﻿
+namespace ConsoleApp1;
 
 public class Base : IBase
 {
     public int Id { get; set; }
 }
-public class TodoItem : Base
+public class TodoItem :Base
 {
     public string Name { get; set; }
     public string Notes { get; set; }
     public TypeOrders? Type { get; set; }
     public int Phone { get; set; }
     public Statuses? Status { get; set; }
-    public int UserId { get; set; }
+    public UserItem User { get; set; }
 }
 
-public class UserItem : Base
+public class UserItem: Base
 {
     public string Login { get; set; }
     public string Password { get; set; }
@@ -26,9 +25,9 @@ public class UserItem : Base
 
 public enum TypeOrders
 {
-    Поверка,
-    Образец,
-    Индивидуальный
+      Поверка,
+      Образец,
+      Индивидуальный
 }
 
 public enum Statuses

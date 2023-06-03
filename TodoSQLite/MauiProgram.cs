@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TodoSQLite.Data;
 using TodoSQLite.Views;
 
@@ -19,10 +21,13 @@ public static class MauiProgram
 
 		builder.Services.AddSingleton<TodoListPage>();
 		builder.Services.AddTransient<TodoItemPage>();
+        builder.Services.AddScoped<IDbRepository, DbRepository>();
+        builder.Services.AddDbContext<DataContext>(options =>
+        {
+            options
+                .UseNpgsql("Server=localhost;Port=5432;Database=Todo; User Id=postgres;Password=1234");
+        });
 
-		builder.Services.AddSingleton<TodoItemDatabase>();
-		builder.Services.AddSingleton<UserItemDataBase>();
-
-		return builder.Build();
+        return builder.Build();
 	}
 }
