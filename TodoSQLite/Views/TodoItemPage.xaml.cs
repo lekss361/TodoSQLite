@@ -55,7 +55,11 @@ public partial class TodoItemPage : ContentPage
                 TypeRequests = (int)Item.Type;
                 Status = (int)Item.Status;
             }
-            TypeRequests= (int)Item.Type;
+            if (_todoItem.Type!=null)
+            {
+            TypeRequests= (int)_todoItem.Type;
+
+            }
             NameCompanyEntry = Item.Name;
             this.NameCompanyEntr.Text = Item.Name;
             this.Number.Text = _todoItem.Phone.ToString();
