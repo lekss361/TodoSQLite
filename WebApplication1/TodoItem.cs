@@ -8,7 +8,7 @@ public class Base : IBase
 public class TodoItem :Base
 {
     public string Name { get; set; }
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
     public TypeOrders? Type { get; set; }
     public int Phone { get; set; }
     public Statuses? Status { get; set; }

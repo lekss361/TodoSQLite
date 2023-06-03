@@ -12,6 +12,9 @@ public partial class TodoItemPage : ContentPage
     public int Status { get; set; }
     public string NameCompanyEntry { get; set; }
     public int Role { get; set; }
+    private int UserId;
+    public int id;
+    private bool Init { get; set; }
     private TodoItem _todoItem = new TodoItem();
     private UserItem _userItem = new();
     private IDbRepository dbRepository;
@@ -43,26 +46,32 @@ public partial class TodoItemPage : ContentPage
         get { return _todoItem; }
         set
         {
+             
             _todoItem = value;
+            id=_todoItem.Id;
+            UserId=_todoItem.UserId;
             if (Item.Type != null)
             {
                 TypeRequests = (int)Item.Type;
-            Status = (int)Item.Status;
+                Status = (int)Item.Status;
             }
+            TypeRequests= (int)Item.Type;
             NameCompanyEntry = Item.Name;
             this.NameCompanyEntr.Text = Item.Name;
             this.Number.Text = _todoItem.Phone.ToString();
+            Init = false;
 
 
 
         }
     }
 
-    public TodoItemPage( IDbRepository dbRepository)
+    public TodoItemPage(IDbRepository dbRepository)
     {
         InitializeComponent();
         BindingContext = this;
         this.dbRepository = dbRepository;
+        Init =true;
     }
 
     async void OnSaveClicked(object sender, EventArgs e)
@@ -72,18 +81,36 @@ public partial class TodoItemPage : ContentPage
             await DisplayAlert("Name Required", "Please enter a name for the todo item.", "OK");
             return;
         }
-        if (TypeRequest.SelectedIndex == null)
+        if (TypeRequest.SelectedIndex == -1)
         {
             _todoItem.Status = Statuses.Обрабатывается;
 
         }
 
-        _todoItem.UserId = User.Id;
+        if (User.Role==0)
+        {
+            _todoItem.UserId = User.Id;
+
+        }
+        else
+        {
+            _todoItem.UserId = UserId;
+        }
+        _todoItem.Id = id;
         _todoItem.Status = (Statuses)this.Status;
         _todoItem.Phone = Convert.ToInt32(this.Number.Text);
         _todoItem.Name = this.NameCompanyEntr.Text;
         _todoItem.Type = (TypeOrders)this.TypeRequesz.SelectedIndex;
+        if (Init)
+        {
         dbRepository.Add<TodoItem>(_todoItem);
+
+        }
+        else
+        {
+            dbRepository.Update<TodoItem>(_todoItem);
+
+        }
         dbRepository.SaveChangesAsync();
 
         await Shell.Current.GoToAsync("..");

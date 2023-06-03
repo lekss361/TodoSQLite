@@ -78,7 +78,7 @@ public partial class TodoListPage : ContentPage
         {
             List<TodoItem> items = new List<TodoItem>();
             if (userItem.Role == Role.User)
-                items = dbRepository.Get<TodoItem>(x => x.Id == userItem.Id).ToList();
+                items = dbRepository.Get<TodoItem>(x => x.UserId == userItem.Id).ToList();
             else
                 items = dbRepository.GetAll<TodoItem>().ToList();
 

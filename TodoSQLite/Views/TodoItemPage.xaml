@@ -20,7 +20,7 @@
                 </Picker.Items>
             </Picker>
             <Label x:Name="TitelNumber" IsVisible="False" Text="Номер" />
-            <Entry x:Name="Number" IsVisible="False" TextChanged="OnEntryTextChanged"  />
+            <Entry x:Name="Number" MaxLength="8" IsVisible="False" TextChanged="OnEntryTextChanged"  />
 
             <Label Text="Состояние" />
             <Picker  x:Name="TypeRequest" SelectedIndex="{Binding Status}" 
